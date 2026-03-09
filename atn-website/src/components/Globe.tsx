@@ -246,8 +246,8 @@ const Earth = memo(function Earth({ paused, mouse }: EarthProps) {
   const earthGeo = useMemo(() => new THREE.SphereGeometry(1, 48, 48), []);
   const atmoGeo = useMemo(() => new THREE.SphereGeometry(1.02, 48, 48), []);
 
-  // Sun direction (normalized) — light from the side so both day & night are visible
-  const sunDir = useMemo(() => new THREE.Vector3(3, 1, 2).normalize(), []);
+  // Sun direction (normalized) — light from the right side so city lights show on front-left
+  const sunDir = useMemo(() => new THREE.Vector3(1, 0.3, 0).normalize(), []);
 
   // Shader uniforms
   const uniforms = useMemo(
