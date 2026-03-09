@@ -175,6 +175,49 @@ function SceneCleanup() {
   return null;
 }
 
+// ---------- Day/Night shader ----------
+const earthVertexShader = `
+  varying vec2 vUv;
+  varying vec3 vNormal;
+  varying vec3 vWorldPosition;
+
+  void main() {
+    vUv = uv;
+    vNormal = normalize(normalMatrix * normal);
+    vec4 worldPos = modelMatrix * vec4(position, 1.0);
+    vWorldPosition = worldPos.xyz;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`;
+
+const earthFragmentShader = `
+  uniform sampler2D dayMap;
+  uniform sampler2D nightMap;
+  uniform vec3 sunDirection;
+
+  varying vec2 vUv;
+  varying vec3 vNormal;
+  varying vec3 vWorldPosition;
+
+  void main() {
+    vec3 normal = normalize(vNormal);
+    float NdotL = dot(normal, sunDirection);
+
+    // Smooth transition at the terminator
+    float blend = smoothstep(-0.15, 0.25, NdotL);
+
+    vec4 dayColor = texture2D(dayMap, vUv);
+    vec4 nightColor = texture2D(nightMap, vUv);
+
+    // Day side gets diffuse lighting, night side shows city lights
+    vec3 litDay = dayColor.rgb * max(NdotL, 0.05);
+    vec3 litNight = nightColor.rgb * 1.2;
+
+    vec3 finalColor = mix(litNight, litDay, blend);
+    gl_FragColor = vec4(finalColor, 1.0);
+  }
+`;
+
 // ---------- Earth mesh ----------
 interface EarthProps {
   paused: boolean;
@@ -184,24 +227,47 @@ interface EarthProps {
 const Earth = memo(function Earth({ paused, mouse }: EarthProps) {
   const meshRef = useRef<THREE.Mesh>(null);
   const atmosphereRef = useRef<THREE.Mesh>(null);
+  const materialRef = useRef<THREE.ShaderMaterial>(null);
 
   // Load textures with error handling
   const earthMap = useTexture(
     "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg"
   );
-  const earthSpecular = useTexture(
-    "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_specular_2048.jpg"
+  const nightLights = useTexture(
+    "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_lights_2048.png"
   );
-  const earthNormal = useTexture(
-    "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_normal_2048.jpg"
-  );
-
-  // Memoize static values
-  const specularColor = useMemo(() => new THREE.Color(0x333333), []);
 
   // Memoize geometries so they aren't recreated
   const earthGeo = useMemo(() => new THREE.SphereGeometry(1, 48, 48), []);
   const atmoGeo = useMemo(() => new THREE.SphereGeometry(1.02, 48, 48), []);
+
+  // Sun direction (normalized) — light coming from upper-right
+  const sunDir = useMemo(() => new THREE.Vector3(5, 3, 5).normalize(), []);
+
+  // Shader uniforms
+  const uniforms = useMemo(
+    () => ({
+      dayMap: { value: null as THREE.Texture | null },
+      nightMap: { value: null as THREE.Texture | null },
+      sunDirection: { value: sunDir },
+    }),
+    [sunDir]
+  );
+
+  // Update texture uniforms when loaded
+  useEffect(() => {
+    if (materialRef.current && earthMap) {
+      materialRef.current.uniforms.dayMap.value = earthMap;
+      materialRef.current.needsUpdate = true;
+    }
+  }, [earthMap]);
+
+  useEffect(() => {
+    if (materialRef.current && nightLights) {
+      materialRef.current.uniforms.nightMap.value = nightLights;
+      materialRef.current.needsUpdate = true;
+    }
+  }, [nightLights]);
 
   // Dispose geometries on unmount
   useEffect(() => {
@@ -233,23 +299,22 @@ const Earth = memo(function Earth({ paused, mouse }: EarthProps) {
     mesh.rotation.z += (m.x * 0.1 - mesh.rotation.z) * 0.03;
   });
 
-  // Don't render earth mesh until at least the color map is ready
+  // Don't render until at least the day map is ready
   if (!earthMap) return null;
 
   return (
     <group>
       <mesh ref={meshRef} geometry={earthGeo}>
-        <meshPhongMaterial
-          map={earthMap}
-          specularMap={earthSpecular ?? undefined}
-          normalMap={earthNormal ?? undefined}
-          specular={specularColor}
-          shininess={5}
+        <shaderMaterial
+          ref={materialRef}
+          vertexShader={earthVertexShader}
+          fragmentShader={earthFragmentShader}
+          uniforms={uniforms}
         />
       </mesh>
       <mesh ref={atmosphereRef} geometry={atmoGeo}>
         <meshPhongMaterial
-          color={0xffffff}
+          color={0x4488ff}
           transparent
           opacity={0.08}
           side={THREE.BackSide}
