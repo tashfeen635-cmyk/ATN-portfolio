@@ -15,6 +15,19 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <head>
+        <link
+          rel="preload"
+          href="https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg"
+          as="image"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          href="https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_lights_2048.png"
+          as="image"
+          crossOrigin="anonymous"
+        />
+        <link rel="preconnect" href="https://raw.githubusercontent.com" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"

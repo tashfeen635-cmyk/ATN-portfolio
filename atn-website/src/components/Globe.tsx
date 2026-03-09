@@ -316,18 +316,19 @@ const Earth = memo(function Earth({ paused, mouse }: EarthProps) {
     mesh.rotation.z += (m.x * 0.1 - mesh.rotation.z) * 0.03;
   });
 
-  // Don't render until at least the day map is ready
-  if (!earthMap) return null;
-
   return (
     <group>
       <mesh ref={meshRef} geometry={earthGeo}>
-        <shaderMaterial
-          ref={materialRef}
-          vertexShader={earthVertexShader}
-          fragmentShader={earthFragmentShader}
-          uniforms={uniforms}
-        />
+        {earthMap ? (
+          <shaderMaterial
+            ref={materialRef}
+            vertexShader={earthVertexShader}
+            fragmentShader={earthFragmentShader}
+            uniforms={uniforms}
+          />
+        ) : (
+          <meshPhongMaterial color={0x1a3a5c} />
+        )}
       </mesh>
       <mesh ref={atmosphereRef} geometry={atmoGeo}>
         <meshPhongMaterial

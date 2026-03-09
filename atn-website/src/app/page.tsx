@@ -6,8 +6,11 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 
-// Heavy 3D component — dynamic import, no SSR
-const Globe = dynamic(() => import("@/components/Globe"), { ssr: false });
+// 3D component — no SSR but eagerly loaded (no lazy chunk split)
+const Globe = dynamic(() => import("@/components/Globe"), {
+  ssr: false,
+  loading: () => <div id="globe-bg" />,
+});
 
 // Below-fold sections — lazy loaded so they don't block initial paint
 const AboutSection = dynamic(() => import("@/components/AboutSection"));
