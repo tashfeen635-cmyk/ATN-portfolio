@@ -23,7 +23,7 @@ export default function RootLayout({
         />
         <link
           rel="preload"
-          href="https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_lights_2048.png"
+          href="https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_clouds_2048.png"
           as="image"
           crossOrigin="anonymous"
         />

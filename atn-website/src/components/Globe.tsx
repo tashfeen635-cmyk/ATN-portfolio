@@ -175,51 +175,64 @@ function SceneCleanup() {
   return null;
 }
 
-// ---------- Day/Night shader ----------
+// ---------- Blue Marble Earth shader ----------
 const earthVertexShader = `
   varying vec2 vUv;
   varying vec3 vNormal;
-  varying vec3 vWorldPosition;
+  varying vec3 vViewDir;
 
   void main() {
     vUv = uv;
     vNormal = normalize(normalMatrix * normal);
-    vec4 worldPos = modelMatrix * vec4(position, 1.0);
-    vWorldPosition = worldPos.xyz;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    vec4 mvPos = modelViewMatrix * vec4(position, 1.0);
+    vViewDir = normalize(-mvPos.xyz);
+    gl_Position = projectionMatrix * mvPos;
   }
 `;
 
 const earthFragmentShader = `
   uniform sampler2D dayMap;
-  uniform sampler2D nightMap;
+  uniform sampler2D cloudMap;
   uniform vec3 sunDirection;
 
   varying vec2 vUv;
   varying vec3 vNormal;
-  varying vec3 vWorldPosition;
+  varying vec3 vViewDir;
 
   void main() {
     vec3 normal = normalize(vNormal);
+    vec3 view = normalize(vViewDir);
     float NdotL = dot(normal, sunDirection);
 
+    // Earth surface
     vec4 dayColor = texture2D(dayMap, vUv);
-    vec4 nightColor = texture2D(nightMap, vUv);
 
-    // Bright daytime globe — high ambient + soft diffuse
-    float diffuse = 0.6 + 0.4 * max(NdotL, 0.0);
-    vec3 litDay = dayColor.rgb * diffuse;
+    // Diffuse lighting — bright and vivid
+    float diffuse = 0.45 + 0.55 * max(NdotL, 0.0);
+    vec3 surface = dayColor.rgb * diffuse * 1.15;
 
-    // Subtle specular highlight on oceans
-    float specular = pow(max(NdotL, 0.0), 8.0) * 0.15;
-    litDay += vec3(specular);
+    // Cloud layer
+    vec4 clouds = texture2D(cloudMap, vUv);
+    float cloudAlpha = clouds.r * 0.9;
+    vec3 cloudColor = vec3(1.0) * diffuse * cloudAlpha;
+    surface = mix(surface, surface + cloudColor, cloudAlpha);
 
-    // City lights — subtle warm glow overlay
-    float lightIntensity = nightColor.r * 0.3 + nightColor.g * 0.5 + nightColor.b * 0.2;
-    vec3 cityLights = vec3(1.0, 0.9, 0.6) * lightIntensity * 0.6;
+    // Specular highlight on oceans
+    vec3 halfDir = normalize(sunDirection + view);
+    float spec = pow(max(dot(normal, halfDir), 0.0), 20.0) * 0.3;
+    surface += vec3(spec) * (1.0 - cloudAlpha);
 
-    vec3 finalColor = litDay + cityLights;
-    gl_FragColor = vec4(finalColor, 1.0);
+    // Blue atmospheric rim glow (fresnel)
+    float fresnel = 1.0 - max(dot(view, normal), 0.0);
+    float rim = pow(fresnel, 3.0);
+    vec3 atmosphereColor = vec3(0.4, 0.65, 1.0);
+    surface += atmosphereColor * rim * 0.7;
+
+    // Slight blue tint to the dark limb
+    float limbDark = pow(fresnel, 5.0);
+    surface += vec3(0.15, 0.25, 0.5) * limbDark * 0.3;
+
+    gl_FragColor = vec4(surface, 1.0);
   }
 `;
 
@@ -234,26 +247,26 @@ const Earth = memo(function Earth({ paused, mouse }: EarthProps) {
   const atmosphereRef = useRef<THREE.Mesh>(null);
   const materialRef = useRef<THREE.ShaderMaterial>(null);
 
-  // Load textures with error handling
+  // Load textures
   const earthMap = useTexture(
     "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg"
   );
-  const nightLights = useTexture(
-    "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_lights_2048.png"
+  const cloudMap = useTexture(
+    "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_clouds_2048.png"
   );
 
-  // Memoize geometries so they aren't recreated
-  const earthGeo = useMemo(() => new THREE.SphereGeometry(1, 48, 48), []);
-  const atmoGeo = useMemo(() => new THREE.SphereGeometry(1.02, 48, 48), []);
+  // Memoize geometries
+  const earthGeo = useMemo(() => new THREE.SphereGeometry(1, 64, 64), []);
+  const atmoGeo = useMemo(() => new THREE.SphereGeometry(1.04, 64, 64), []);
 
-  // Sun direction (normalized) — front-facing for bright daytime look
+  // Sun direction — front-facing for bright Blue Marble look
   const sunDir = useMemo(() => new THREE.Vector3(2, 1, 3).normalize(), []);
 
   // Shader uniforms
   const uniforms = useMemo(
     () => ({
       dayMap: { value: null as THREE.Texture | null },
-      nightMap: { value: null as THREE.Texture | null },
+      cloudMap: { value: null as THREE.Texture | null },
       sunDirection: { value: sunDir },
     }),
     [sunDir]
@@ -268,11 +281,11 @@ const Earth = memo(function Earth({ paused, mouse }: EarthProps) {
   }, [earthMap]);
 
   useEffect(() => {
-    if (materialRef.current && nightLights) {
-      materialRef.current.uniforms.nightMap.value = nightLights;
+    if (materialRef.current && cloudMap) {
+      materialRef.current.uniforms.cloudMap.value = cloudMap;
       materialRef.current.needsUpdate = true;
     }
-  }, [nightLights]);
+  }, [cloudMap]);
 
   // Dispose geometries on unmount
   useEffect(() => {
@@ -332,9 +345,9 @@ const Earth = memo(function Earth({ paused, mouse }: EarthProps) {
       </mesh>
       <mesh ref={atmosphereRef} geometry={atmoGeo}>
         <meshPhongMaterial
-          color={0x88ccff}
+          color={0x66aaff}
           transparent
-          opacity={0.12}
+          opacity={0.18}
           side={THREE.BackSide}
         />
       </mesh>
