@@ -282,6 +282,18 @@ const Earth = memo(function Earth({ paused, mouse }: EarthProps) {
     };
   }, [earthGeo, atmoGeo]);
 
+  // Set initial rotation to show Europe/Africa/Asia (land hemisphere)
+  const initialized = useRef(false);
+  useEffect(() => {
+    if (!initialized.current && meshRef.current && atmosphereRef.current) {
+      // ~30°E longitude — centers on Europe, Africa, Middle East, Asia
+      const initialY = -0.5;
+      meshRef.current.rotation.y = initialY;
+      atmosphereRef.current.rotation.y = initialY;
+      initialized.current = true;
+    }
+  });
+
   const { report } = useAdaptivePerformance();
 
   useFrame((_state, delta) => {
