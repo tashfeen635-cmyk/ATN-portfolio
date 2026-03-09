@@ -203,22 +203,21 @@ const earthFragmentShader = `
     vec3 normal = normalize(vNormal);
     float NdotL = dot(normal, sunDirection);
 
-    // Smooth transition at the terminator
-    float blend = smoothstep(-0.1, 0.2, NdotL);
-
     vec4 dayColor = texture2D(dayMap, vUv);
     vec4 nightColor = texture2D(nightMap, vUv);
 
-    // Day side: standard diffuse lighting
-    vec3 litDay = dayColor.rgb * (0.1 + 0.9 * max(NdotL, 0.0));
+    // Diffuse lighting on the Earth surface
+    vec3 litDay = dayColor.rgb * (0.15 + 0.85 * max(NdotL, 0.0));
 
-    // Night side: bright warm city lights with golden tint
+    // City lights — always on, warm golden tint
     float lightIntensity = nightColor.r * 0.3 + nightColor.g * 0.5 + nightColor.b * 0.2;
-    vec3 warmLight = vec3(1.0, 0.85, 0.5) * lightIntensity * 2.0;
-    // Add a dim blue ambient to the dark ocean/land areas
-    vec3 litNight = warmLight + vec3(0.01, 0.02, 0.04);
+    vec3 cityLights = vec3(1.0, 0.85, 0.5) * lightIntensity * 1.8;
 
-    vec3 finalColor = mix(litNight, litDay, blend);
+    // Lights are always visible — brighter on dark side, subtler on lit side
+    float nightBoost = smoothstep(0.2, -0.1, NdotL); // 1.0 on dark side, 0.0 on bright side
+    float lightsStrength = mix(0.5, 1.0, nightBoost);
+
+    vec3 finalColor = litDay + cityLights * lightsStrength;
     gl_FragColor = vec4(finalColor, 1.0);
   }
 `;
