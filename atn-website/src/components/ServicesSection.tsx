@@ -1,0 +1,135 @@
+"use client";
+
+import { memo } from "react";
+import { motion } from "framer-motion";
+import SectionHeader from "./SectionHeader";
+
+const services = [
+  {
+    title: "Web Development",
+    description:
+      "Custom web applications built with modern frameworks, optimized for performance, scalability, and seamless user experiences.",
+    icon: (
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
+      />
+    ),
+  },
+  {
+    title: "Mobile Apps",
+    description:
+      "Native and cross-platform mobile applications for iOS and Android that deliver intuitive, high-quality experiences.",
+    icon: (
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
+      />
+    ),
+  },
+  {
+    title: "UI/UX Design",
+    description:
+      "User-centered design that combines aesthetics with functionality, creating digital products people love to use.",
+    icon: (
+      <>
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
+        />
+      </>
+    ),
+  },
+  {
+    title: "Cloud Solutions",
+    description:
+      "Scalable cloud infrastructure and DevOps services on AWS, Azure, and GCP to power your applications reliably.",
+    icon: (
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"
+      />
+    ),
+  },
+  {
+    title: "AI & Machine Learning",
+    description:
+      "Intelligent solutions powered by AI and ML to automate processes, gain insights, and make smarter decisions.",
+    icon: (
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+      />
+    ),
+  },
+  {
+    title: "Cybersecurity",
+    description:
+      "Comprehensive security audits, penetration testing, and secure architecture to protect your digital assets.",
+    icon: (
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+      />
+    ),
+  },
+];
+
+function ServicesSection() {
+  return (
+    <section id="services" className="section-base py-24 px-5">
+      <div className="max-w-7xl mx-auto">
+        <SectionHeader
+          badge="What we offer"
+          title="Our"
+          titleHighlight="Services"
+          description="End-to-end technology solutions tailored to your business needs."
+        />
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          {services.map((service, i) => (
+            <motion.div
+              key={service.title}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.5, delay: i * 0.08 }}
+              className="glass rounded-2xl p-8 group hover:-translate-y-2 hover:border-white/25 hover:bg-white/[0.06] transition-all duration-400 hover:shadow-lg hover:shadow-black/20"
+            >
+              <div className="w-14 h-14 rounded-[14px] bg-white/10 flex items-center justify-center mb-5 group-hover:bg-white transition-all duration-300">
+                <svg
+                  className="w-6 h-6 text-white group-hover:text-[#0a1628] transition-colors duration-300"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  {service.icon}
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-3">
+                {service.title}
+              </h3>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                {service.description}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default memo(ServicesSection);

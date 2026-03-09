@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATN - Alpine Technology Network</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #011f4b;
+            overflow-x: hidden;
+        }
+        
+        #globe-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 0;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+            background: radial-gradient(ellipse at center, transparent 0%, rgba(1,31,75,0.3) 50%, rgba(1,31,75,0.6) 100%);
+        }
+        
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .glow-text {
+            text-shadow: 0 0 40px rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn-primary {
+            background: #ffffff;
+            color: #011f4b;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn-secondary {
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .badge-pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .team-section {
+            position: relative;
+            z-index: 10;
+            background: linear-gradient(180deg, rgba(1,31,75,0.7) 0%, rgba(1,31,75,0.75) 100%);
+            padding: 100px 20px;
+        }
+
+        .team-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 40px 24px;
+            transition: all 0.4s ease;
+            text-align: center;
+        }
+
+        .team-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 40px rgba(255, 255, 255, 0.08);
+        }
+
+        .team-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            background: rgba(255, 255, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            font-weight: 700;
+            color: white;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.4s ease;
+        }
+
+        .team-card:hover .team-avatar {
+            border-color: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+        }
+
+        .team-socials a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .team-socials a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #ffffff;
+        }
+
+        .section {
+            position: relative;
+            z-index: 10;
+            background: linear-gradient(180deg, rgba(1,31,75,0.7) 0%, rgba(1,31,75,0.75) 100%);
+            padding: 100px 20px;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px 28px;
+            transition: all 0.4s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .icon-box {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover .icon-box {
+            background: #ffffff;
+        }
+
+        .glass-card:hover .icon-box svg {
+            color: #011f4b;
+        }
+
+        .work-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .work-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .work-card-img {
+            height: 200px;
+            background: rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 30px 20px;
+        }
+
+        .stat-number {
+            font-size: 48px;
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1;
+        }
+
+        .augment-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 28px;
+            transition: all 0.3s ease;
+        }
+
+        .augment-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .contact-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 14px 18px;
+            color: #ffffff;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .contact-input:focus {
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .contact-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .footer {
+            position: relative;
+            z-index: 10;
+            background: rgba(1, 31, 75, 0.9);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 60px 20px 30px;
+        }
+    </style>
+</head>
+<body class="bg-[#011f4b] text-white">
+    <!-- Stars Background -->
+    <div class="stars" id="stars"></div>
+    
+    <!-- Grid Overlay -->
+    <div class="grid-overlay"></div>
+    
+    <!-- 3D Globe Canvas -->
+    <div id="globe-container"></div>
+    
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 px-6 py-4">
+        <div class="max-w-7xl mx-auto glass-nav rounded-full px-6 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+                    <svg class="w-5 h-5 text-[#011f4b]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                </div>
+                <div>
+                    <span class="text-lg font-bold tracking-wider">ATN</span>
+                    <span class="block text-[8px] text-gray-400 tracking-widest uppercase">Alpine Technology Network</span>
+                </div>
+            </div>
+            
+            <div class="hidden md:flex items-center space-x-8 text-sm">
+                <a href="#" class="text-white font-medium">Home</a>
+                <a href="#about" class="text-gray-300 hover:text-white transition">About</a>
+                <a href="#services" class="text-gray-300 hover:text-white transition">Our Services</a>
+                <a href="#work" class="text-gray-300 hover:text-white transition">Work</a>
+                <a href="#staff-augmentation" class="text-gray-300 hover:text-white transition">Staff Augmentation</a>
+                <a href="#contact" class="text-gray-300 hover:text-white transition">Contact</a>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <button class="flex items-center space-x-1 text-sm text-gray-300 hover:text-white">
+                    <span>EN</span>
+                    <img src="https://flagcdn.com/w20/us.png" alt="US" class="w-5 h-3 rounded-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <button class="btn-primary px-6 py-2 rounded-full text-sm font-medium flex items-center space-x-1">
+                    <span>Apply Now</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Content -->
+    <div class="hero-content">
+        <div class="max-w-4xl mx-auto space-y-8">
+            <!-- Badge -->
+            <div class="inline-flex items-center space-x-2 glass-nav rounded-full px-4 py-2 badge-pulse">
+                <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+                <span class="text-sm text-gray-200">We make digital (and magical)...</span>
+            </div>
+            
+            <!-- Main Heading -->
+            <h1 class="text-5xl md:text-7xl font-bold leading-tight glow-text">
+                <span class="text-white">Helping Companies</span>
+                <span class="text-gray-200"> Scale with</span><br>
+                <span class="text-white">World Class Technology</span>
+            </h1>
+            
+            <!-- Subheading -->
+            <p class="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
+                We design, develop, and deliver comprehensive software, prioritizing user experience, engagement, and intelligent solutions for diverse platforms.
+            </p>
+            
+            <!-- CTA Buttons -->
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                <button class="btn-primary px-8 py-4 rounded-full font-medium flex items-center space-x-2 text-base">
+                    <span>About Us</span>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17L17 7M17 7H7M17 7V17"/>
+                    </svg>
+                </button>
+                <button class="btn-secondary px-8 py-4 rounded-full font-medium flex items-center space-x-2 text-base">
+                    <span>Contact Us</span>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17L17 7M17 7H7M17 7V17"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Our Team Section -->
+    <section class="team-section" id="team">
+        <div class="max-w-7xl mx-auto">
+            <!-- Section Header -->
+            <div class="text-center mb-16">
+                <div class="inline-flex items-center space-x-2 glass-nav rounded-full px-4 py-2 mb-6">
+                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                    <span class="text-sm text-gray-200">The people behind ATN</span>
+                </div>
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">
+                    <span class="text-white">Meet Our </span>
+                    <span class="text-gray-200">Team</span>
+                </h2>
+                <p class="text-gray-400 max-w-2xl mx-auto text-lg">
+                    A passionate group of innovators dedicated to delivering world-class technology solutions.
+                </p>
+            </div>
+
+            <!-- Team Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+
+                <!-- Member 1 -->
+                <div class="team-card">
+                    <div class="team-avatar">JD</div>
+                    <h3 class="text-xl font-semibold text-white mb-1">John Doe</h3>
+                    <p class="text-gray-300 text-sm font-medium mb-3">CEO & Founder</p>
+                    <p class="text-gray-400 text-sm mb-5">Visionary leader with 15+ years in tech, driving innovation and strategic growth.</p>
+                    <div class="team-socials flex justify-center space-x-3">
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Member 2 -->
+                <div class="team-card">
+                    <div class="team-avatar">SA</div>
+                    <h3 class="text-xl font-semibold text-white mb-1">Sarah Ahmed</h3>
+                    <p class="text-gray-300 text-sm font-medium mb-3">CTO</p>
+                    <p class="text-gray-400 text-sm mb-5">Full-stack architect passionate about scalable systems and emerging technologies.</p>
+                    <div class="team-socials flex justify-center space-x-3">
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Member 3 -->
+                <div class="team-card">
+                    <div class="team-avatar">MK</div>
+                    <h3 class="text-xl font-semibold text-white mb-1">Mike Khan</h3>
+                    <p class="text-gray-300 text-sm font-medium mb-3">Lead Designer</p>
+                    <p class="text-gray-400 text-sm mb-5">Creative mind crafting intuitive user experiences and stunning visual interfaces.</p>
+                    <div class="team-socials flex justify-center space-x-3">
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Member 4 -->
+                <div class="team-card">
+                    <div class="team-avatar">LR</div>
+                    <h3 class="text-xl font-semibold text-white mb-1">Lina Rashid</h3>
+                    <p class="text-gray-300 text-sm font-medium mb-3">Project Manager</p>
+                    <p class="text-gray-400 text-sm mb-5">Agile expert ensuring seamless delivery and exceptional client collaboration.</p>
+                    <div class="team-socials flex justify-center space-x-3">
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="section" id="about">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <div class="inline-flex items-center space-x-2 glass-nav rounded-full px-4 py-2 mb-6">
+                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                    <span class="text-sm text-gray-200">Who we are</span>
+                </div>
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">
+                    <span class="text-white">About </span>
+                    <span class="text-gray-200">ATN</span>
+                </h2>
+                <p class="text-gray-400 max-w-2xl mx-auto text-lg">
+                    Pioneering digital transformation with cutting-edge technology solutions since day one.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div class="space-y-6">
+                    <h3 class="text-2xl md:text-3xl font-bold text-white">We build technology that empowers businesses to thrive</h3>
+                    <p class="text-gray-300 leading-relaxed">
+                        Alpine Technology Network (ATN) is a forward-thinking software company specializing in building scalable, user-centric digital products. From startups to enterprises, we partner with ambitious teams to turn complex ideas into elegant solutions.
+                    </p>
+                    <p class="text-gray-300 leading-relaxed">
+                        Our expertise spans full-stack development, cloud architecture, AI integration, and UI/UX design. We don't just write code — we engineer experiences that drive growth.
+                    </p>
+                    <div class="flex flex-wrap gap-4 pt-4">
+                        <button class="btn-primary px-6 py-3 rounded-full font-medium text-sm flex items-center space-x-2">
+                            <span>Learn More</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17L17 7M17 7H7M17 7V17"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="stat-item glass-card">
+                        <div class="stat-number">50+</div>
+                        <p class="text-gray-400 text-sm mt-2">Projects Delivered</p>
+                    </div>
+                    <div class="stat-item glass-card">
+                        <div class="stat-number">30+</div>
+                        <p class="text-gray-400 text-sm mt-2">Happy Clients</p>
+                    </div>
+                    <div class="stat-item glass-card">
+                        <div class="stat-number">5+</div>
+                        <p class="text-gray-400 text-sm mt-2">Years Experience</p>
+                    </div>
+                    <div class="stat-item glass-card">
+                        <div class="stat-number">20+</div>
+                        <p class="text-gray-400 text-sm mt-2">Team Members</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Our Services Section -->
+    <section class="section" id="services">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <div class="inline-flex items-center space-x-2 glass-nav rounded-full px-4 py-2 mb-6">
+                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                    <span class="text-sm text-gray-200">What we offer</span>
+                </div>
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">
+                    <span class="text-white">Our </span>
+                    <span class="text-gray-200">Services</span>
+                </h2>
+                <p class="text-gray-400 max-w-2xl mx-auto text-lg">
+                    End-to-end technology solutions tailored to your business needs.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Service 1 -->
+                <div class="glass-card">
+                    <div class="icon-box">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-white mb-3">Web Development</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">Custom web applications built with modern frameworks, optimized for performance, scalability, and seamless user experiences.</p>
+                </div>
+
+                <!-- Service 2 -->
+                <div class="glass-card">
+                    <div class="icon-box">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-white mb-3">Mobile Apps</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">Native and cross-platform mobile applications for iOS and Android that deliver intuitive, high-quality experiences.</p>
+                </div>
+
+                <!-- Service 3 -->
+                <div class="glass-card">
+                    <div class="icon-box">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-white mb-3">UI/UX Design</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">User-centered design that combines aesthetics with functionality, creating digital products people love to use.</p>
+                </div>
+
+                <!-- Service 4 -->
+                <div class="glass-card">
+                    <div class="icon-box">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-white mb-3">Cloud Solutions</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">Scalable cloud infrastructure and DevOps services on AWS, Azure, and GCP to power your applications reliably.</p>
+                </div>
+
+                <!-- Service 5 -->
+                <div class="glass-card">
+                    <div class="icon-box">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-white mb-3">AI & Machine Learning</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">Intelligent solutions powered by AI and ML to automate processes, gain insights, and make smarter decisions.</p>
+                </div>
+
+                <!-- Service 6 -->
+                <div class="glass-card">
+                    <div class="icon-box">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-white mb-3">Cybersecurity</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">Comprehensive security audits, penetration testing, and secure architecture to protect your digital assets.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Work / Portfolio Section -->
+    <section class="section" id="work">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <div class="inline-flex items-center space-x-2 glass-nav rounded-full px-4 py-2 mb-6">
+                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                    <span class="text-sm text-gray-200">Our portfolio</span>
+                </div>
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">
+                    <span class="text-white">Our </span>
+                    <span class="text-gray-200">Work</span>
+                </h2>
+                <p class="text-gray-400 max-w-2xl mx-auto text-lg">
+                    A showcase of projects we've delivered for clients across industries.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Project 1 -->
+                <div class="work-card">
+                    <div class="work-card-img">
+                        <svg class="w-16 h-16 text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"/>
+                        </svg>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex flex-wrap gap-2 mb-3">
+                            <span class="text-xs px-3 py-1 rounded-full bg-white/10 text-gray-300">React</span>
+                            <span class="text-xs px-3 py-1 rounded-full bg-white/10 text-gray-300">Node.js</span>
+                        </div>
+                        <h3 class="text-lg font-semibold text-white mb-2">E-Commerce Platform</h3>
+                        <p class="text-gray-400 text-sm">A full-featured online marketplace with real-time inventory, payment integration, and analytics dashboard.</p>
+                    </div>
+                </div>
+
+                <!-- Project 2 -->
+                <div class="work-card">
+                    <div class="work-card-img">
+                        <svg class="w-16 h-16 text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex flex-wrap gap-2 mb-3">
+                            <span class="text-xs px-3 py-1 rounded-full bg-white/10 text-gray-300">Python</span>
+                            <span class="text-xs px-3 py-1 rounded-full bg-white/10 text-gray-300">AI/ML</span>
+                        </div>
+                        <h3 class="text-lg font-semibold text-white mb-2">FinTech Analytics</h3>
+                        <p class="text-gray-400 text-sm">AI-powered financial analytics platform providing real-time insights and predictive modeling for investors.</p>
+                    </div>
+                </div>
+
+                <!-- Project 3 -->
+                <div class="work-card">
+                    <div class="work-card-img">
+                        <svg class="w-16 h-16 text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                        </svg>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex flex-wrap gap-2 mb-3">
+                            <span class="text-xs px-3 py-1 rounded-full bg-white/10 text-gray-300">Flutter</span>
+                            <span class="text-xs px-3 py-1 rounded-full bg-white/10 text-gray-300">Firebase</span>
+                        </div>
+                        <h3 class="text-lg font-semibold text-white mb-2">HealthCare App</h3>
+                        <p class="text-gray-400 text-sm">A mobile health platform connecting patients with doctors through telemedicine, scheduling, and health tracking.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Staff Augmentation Section -->
+    <section class="section" id="staff-augmentation">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <div class="inline-flex items-center space-x-2 glass-nav rounded-full px-4 py-2 mb-6">
+                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                    <span class="text-sm text-gray-200">Scale your team</span>
+                </div>
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">
+                    <span class="text-white">Staff </span>
+                    <span class="text-gray-200">Augmentation</span>
+                </h2>
+                <p class="text-gray-400 max-w-2xl mx-auto text-lg">
+                    Extend your team with our top-tier developers, designers, and engineers on demand.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+                <div class="space-y-6">
+                    <h3 class="text-2xl md:text-3xl font-bold text-white">Why choose ATN for staff augmentation?</h3>
+                    <p class="text-gray-300 leading-relaxed">
+                        Whether you need a single specialist or an entire squad, we provide pre-vetted, senior-level talent that integrates seamlessly with your existing workflow. No lengthy hiring cycles, no overhead — just results.
+                    </p>
+
+                    <div class="space-y-4">
+                        <div class="augment-card flex items-start space-x-4">
+                            <div class="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 mt-1">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="text-white font-semibold mb-1">Rapid Onboarding</h4>
+                                <p class="text-gray-400 text-sm">Get developers ramped up and contributing within days, not weeks.</p>
+                            </div>
+                        </div>
+                        <div class="augment-card flex items-start space-x-4">
+                            <div class="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 mt-1">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="text-white font-semibold mb-1">Cost Effective</h4>
+                                <p class="text-gray-400 text-sm">Save up to 60% compared to local hiring while maintaining quality standards.</p>
+                            </div>
+                        </div>
+                        <div class="augment-card flex items-start space-x-4">
+                            <div class="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 mt-1">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="text-white font-semibold mb-1">Vetted Talent</h4>
+                                <p class="text-gray-400 text-sm">Every engineer passes a rigorous technical assessment before joining your team.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <h3 class="text-xl font-semibold text-white mb-4">Technologies we staff for</h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                        <div class="augment-card text-center py-5">
+                            <p class="text-white font-medium text-sm">React / Next.js</p>
+                        </div>
+                        <div class="augment-card text-center py-5">
+                            <p class="text-white font-medium text-sm">Node.js</p>
+                        </div>
+                        <div class="augment-card text-center py-5">
+                            <p class="text-white font-medium text-sm">Python / Django</p>
+                        </div>
+                        <div class="augment-card text-center py-5">
+                            <p class="text-white font-medium text-sm">Flutter / Dart</p>
+                        </div>
+                        <div class="augment-card text-center py-5">
+                            <p class="text-white font-medium text-sm">AWS / Azure</p>
+                        </div>
+                        <div class="augment-card text-center py-5">
+                            <p class="text-white font-medium text-sm">DevOps / CI/CD</p>
+                        </div>
+                        <div class="augment-card text-center py-5">
+                            <p class="text-white font-medium text-sm">React Native</p>
+                        </div>
+                        <div class="augment-card text-center py-5">
+                            <p class="text-white font-medium text-sm">TypeScript</p>
+                        </div>
+                        <div class="augment-card text-center py-5">
+                            <p class="text-white font-medium text-sm">AI / ML</p>
+                        </div>
+                    </div>
+                    <button class="btn-primary px-8 py-4 rounded-full font-medium flex items-center space-x-2 text-base w-full justify-center mt-6">
+                        <span>Hire Developers</span>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17L17 7M17 7H7M17 7V17"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Us Section -->
+    <section class="section" id="contact">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <div class="inline-flex items-center space-x-2 glass-nav rounded-full px-4 py-2 mb-6">
+                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                    <span class="text-sm text-gray-200">Get in touch</span>
+                </div>
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">
+                    <span class="text-white">Contact </span>
+                    <span class="text-gray-200">Us</span>
+                </h2>
+                <p class="text-gray-400 max-w-2xl mx-auto text-lg">
+                    Have a project in mind? Let's talk about how we can help bring your vision to life.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <!-- Contact Form -->
+                <div class="glass-card">
+                    <h3 class="text-xl font-semibold text-white mb-6">Send us a message</h3>
+                    <form class="space-y-5">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <input type="text" placeholder="First Name" class="contact-input">
+                            <input type="text" placeholder="Last Name" class="contact-input">
+                        </div>
+                        <input type="email" placeholder="Email Address" class="contact-input">
+                        <input type="text" placeholder="Subject" class="contact-input">
+                        <textarea placeholder="Your Message" rows="5" class="contact-input" style="resize: none;"></textarea>
+                        <button type="submit" class="btn-primary px-8 py-4 rounded-full font-medium flex items-center space-x-2 text-base w-full justify-center">
+                            <span>Send Message</span>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Contact Info -->
+                <div class="space-y-8">
+                    <div class="glass-card flex items-start space-x-4">
+                        <div class="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-semibold mb-1">Our Office</h4>
+                            <p class="text-gray-400 text-sm">Alpine Technology Network<br>Your Address Here, City, Country</p>
+                        </div>
+                    </div>
+
+                    <div class="glass-card flex items-start space-x-4">
+                        <div class="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-semibold mb-1">Email Us</h4>
+                            <p class="text-gray-400 text-sm">info@atn.com<br>support@atn.com</p>
+                        </div>
+                    </div>
+
+                    <div class="glass-card flex items-start space-x-4">
+                        <div class="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-semibold mb-1">Call Us</h4>
+                            <p class="text-gray-400 text-sm">+1 (000) 000-0000<br>Mon - Fri, 9am - 6pm</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+                <!-- Brand -->
+                <div class="space-y-4">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-[#011f4b]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <span class="text-lg font-bold tracking-wider">ATN</span>
+                            <span class="block text-[8px] text-gray-400 tracking-widest uppercase">Alpine Technology Network</span>
+                        </div>
+                    </div>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Helping companies scale with world-class technology solutions.
+                    </p>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#about" class="text-gray-400 hover:text-white text-sm transition">About Us</a></li>
+                        <li><a href="#services" class="text-gray-400 hover:text-white text-sm transition">Our Services</a></li>
+                        <li><a href="#work" class="text-gray-400 hover:text-white text-sm transition">Work</a></li>
+                        <li><a href="#team" class="text-gray-400 hover:text-white text-sm transition">Our Team</a></li>
+                    </ul>
+                </div>
+
+                <!-- Services -->
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Services</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-400 hover:text-white text-sm transition">Web Development</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white text-sm transition">Mobile Apps</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white text-sm transition">Cloud Solutions</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white text-sm transition">Staff Augmentation</a></li>
+                    </ul>
+                </div>
+
+                <!-- Connect -->
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Connect</h4>
+                    <div class="flex space-x-3 mb-4">
+                        <a href="#" class="w-10 h-10 rounded-full border border-white/15 flex items-center justify-center text-gray-400 hover:text-white hover:border-white/50 transition">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full border border-white/15 flex items-center justify-center text-gray-400 hover:text-white hover:border-white/50 transition">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full border border-white/15 flex items-center justify-center text-gray-400 hover:text-white hover:border-white/50 transition">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full border border-white/15 flex items-center justify-center text-gray-400 hover:text-white hover:border-white/50 transition">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                        </a>
+                    </div>
+                    <a href="#contact" class="text-gray-400 hover:text-white text-sm transition">info@atn.com</a>
+                </div>
+            </div>
+
+            <!-- Bottom Bar -->
+            <div class="border-t border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <p class="text-gray-500 text-sm">&copy; 2026 Alpine Technology Network. All rights reserved.</p>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-500 hover:text-white text-sm transition">Privacy Policy</a>
+                    <a href="#" class="text-gray-500 hover:text-white text-sm transition">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Create stars
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 100; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.width = Math.random() * 2 + 'px';
+            star.style.height = star.style.width;
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            starsContainer.appendChild(star);
+        }
+        
+        // Three.js Globe Setup
+        const container = document.getElementById('globe-container');
+        const scene = new THREE.Scene();
+        
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 2.5;
+        camera.position.y = 0.2;
+        
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        container.appendChild(renderer.domElement);
+        
+        // Create Earth Sphere
+        const geometry = new THREE.SphereGeometry(1, 64, 64);
+        
+        // Load Earth textures
+        const textureLoader = new THREE.TextureLoader();
+        const earthMap = textureLoader.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg');
+        const earthSpecular = textureLoader.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_specular_2048.jpg');
+        const earthNormal = textureLoader.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_normal_2048.jpg');
+        
+        const material = new THREE.MeshPhongMaterial({
+            map: earthMap,
+            specularMap: earthSpecular,
+            normalMap: earthNormal,
+            specular: new THREE.Color(0x333333),
+            shininess: 5
+        });
+        
+        const earth = new THREE.Mesh(geometry, material);
+        scene.add(earth);
+        
+        // Atmosphere glow
+        const atmosphereGeometry = new THREE.SphereGeometry(1.02, 64, 64);
+        const atmosphereMaterial = new THREE.MeshPhongMaterial({
+            color: 0xffffff,
+            transparent: true,
+            opacity: 0.1,
+            side: THREE.BackSide
+        });
+        const atmosphere = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
+        scene.add(atmosphere);
+        
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
+        scene.add(ambientLight);
+        
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(5, 3, 5);
+        scene.add(directionalLight);
+        
+        const greenLight = new THREE.PointLight(0xffffff, 0.5, 10);
+        greenLight.position.set(-5, 0, 5);
+        scene.add(greenLight);
+        
+        // Stars in 3D space
+        const starsGeometry = new THREE.BufferGeometry();
+        const starsCount = 2000;
+        const posArray = new Float32Array(starsCount * 3);
+        
+        for(let i = 0; i < starsCount * 3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 20;
+        }
+        
+        starsGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        const starsMaterial = new THREE.PointsMaterial({
+            size: 0.005,
+            color: 0xffffff,
+            transparent: true,
+            opacity: 0.8
+        });
+        const starsMesh = new THREE.Points(starsGeometry, starsMaterial);
+        scene.add(starsMesh);
+        
+        // Mouse interaction
+        let mouseX = 0;
+        let mouseY = 0;
+        let targetRotationX = 0;
+        let targetRotationY = 0;
+        
+        document.addEventListener('mousemove', (event) => {
+            mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+            mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+        });
+        
+        // Animation loop
+        let rotationSpeed = 0.001;
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Auto rotation
+            earth.rotation.y += rotationSpeed;
+            atmosphere.rotation.y += rotationSpeed;
+            
+            // Mouse interaction - subtle tilt
+            targetRotationY = mouseX * 0.1;
+            targetRotationX = mouseY * 0.1;
+            
+            earth.rotation.x += (targetRotationX - earth.rotation.x) * 0.05;
+            earth.rotation.z += (targetRotationY - earth.rotation.z) * 0.05;
+            
+            // Stars subtle rotation
+            starsMesh.rotation.y += 0.0002;
+            
+            renderer.render(scene, camera);
+        }
+        
+        animate();
+        
+        // Handle resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        
+    </script>
+</body>
+</html>
