@@ -206,18 +206,19 @@ const earthFragmentShader = `
     vec4 dayColor = texture2D(dayMap, vUv);
     vec4 nightColor = texture2D(nightMap, vUv);
 
-    // Diffuse lighting on the Earth surface — raised ambient so oceans aren't too dark
-    vec3 litDay = dayColor.rgb * (0.35 + 0.65 * max(NdotL, 0.0));
+    // Bright daytime globe — high ambient + soft diffuse
+    float diffuse = 0.6 + 0.4 * max(NdotL, 0.0);
+    vec3 litDay = dayColor.rgb * diffuse;
 
-    // City lights — always on, warm golden tint
+    // Subtle specular highlight on oceans
+    float specular = pow(max(NdotL, 0.0), 8.0) * 0.15;
+    litDay += vec3(specular);
+
+    // City lights — subtle warm glow overlay
     float lightIntensity = nightColor.r * 0.3 + nightColor.g * 0.5 + nightColor.b * 0.2;
-    vec3 cityLights = vec3(1.0, 0.85, 0.5) * lightIntensity * 1.8;
+    vec3 cityLights = vec3(1.0, 0.9, 0.6) * lightIntensity * 0.6;
 
-    // Lights are always visible — brighter on dark side, subtler on lit side
-    float nightBoost = smoothstep(0.2, -0.1, NdotL); // 1.0 on dark side, 0.0 on bright side
-    float lightsStrength = mix(0.5, 1.0, nightBoost);
-
-    vec3 finalColor = litDay + cityLights * lightsStrength;
+    vec3 finalColor = litDay + cityLights;
     gl_FragColor = vec4(finalColor, 1.0);
   }
 `;
@@ -245,8 +246,8 @@ const Earth = memo(function Earth({ paused, mouse }: EarthProps) {
   const earthGeo = useMemo(() => new THREE.SphereGeometry(1, 48, 48), []);
   const atmoGeo = useMemo(() => new THREE.SphereGeometry(1.02, 48, 48), []);
 
-  // Sun direction (normalized) — light from the right side so city lights show on front-left
-  const sunDir = useMemo(() => new THREE.Vector3(1, 0.3, 0).normalize(), []);
+  // Sun direction (normalized) — front-facing for bright daytime look
+  const sunDir = useMemo(() => new THREE.Vector3(2, 1, 3).normalize(), []);
 
   // Shader uniforms
   const uniforms = useMemo(
@@ -318,9 +319,9 @@ const Earth = memo(function Earth({ paused, mouse }: EarthProps) {
       </mesh>
       <mesh ref={atmosphereRef} geometry={atmoGeo}>
         <meshPhongMaterial
-          color={0x4488ff}
+          color={0x88ccff}
           transparent
-          opacity={0.08}
+          opacity={0.12}
           side={THREE.BackSide}
         />
       </mesh>
