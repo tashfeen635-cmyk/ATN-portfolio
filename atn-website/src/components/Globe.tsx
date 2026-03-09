@@ -372,7 +372,7 @@ function Globe() {
   );
 
   const cameraConfig = useMemo(
-    () => ({ position: [0, 0.2, 2.5] as [number, number, number], fov: 45 }),
+    () => ({ position: [0, 0.2, 3.2] as [number, number, number], fov: 45 }),
     []
   );
 
