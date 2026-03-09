@@ -204,14 +204,19 @@ const earthFragmentShader = `
     float NdotL = dot(normal, sunDirection);
 
     // Smooth transition at the terminator
-    float blend = smoothstep(-0.15, 0.25, NdotL);
+    float blend = smoothstep(-0.1, 0.2, NdotL);
 
     vec4 dayColor = texture2D(dayMap, vUv);
     vec4 nightColor = texture2D(nightMap, vUv);
 
-    // Day side gets diffuse lighting, night side shows city lights
-    vec3 litDay = dayColor.rgb * max(NdotL, 0.05);
-    vec3 litNight = nightColor.rgb * 1.2;
+    // Day side: standard diffuse lighting
+    vec3 litDay = dayColor.rgb * (0.1 + 0.9 * max(NdotL, 0.0));
+
+    // Night side: bright warm city lights with golden tint
+    float lightIntensity = nightColor.r * 0.3 + nightColor.g * 0.5 + nightColor.b * 0.2;
+    vec3 warmLight = vec3(1.0, 0.85, 0.5) * lightIntensity * 2.0;
+    // Add a dim blue ambient to the dark ocean/land areas
+    vec3 litNight = warmLight + vec3(0.01, 0.02, 0.04);
 
     vec3 finalColor = mix(litNight, litDay, blend);
     gl_FragColor = vec4(finalColor, 1.0);
@@ -241,8 +246,8 @@ const Earth = memo(function Earth({ paused, mouse }: EarthProps) {
   const earthGeo = useMemo(() => new THREE.SphereGeometry(1, 48, 48), []);
   const atmoGeo = useMemo(() => new THREE.SphereGeometry(1.02, 48, 48), []);
 
-  // Sun direction (normalized) — light coming from upper-right
-  const sunDir = useMemo(() => new THREE.Vector3(5, 3, 5).normalize(), []);
+  // Sun direction (normalized) — light from the side so both day & night are visible
+  const sunDir = useMemo(() => new THREE.Vector3(3, 1, 2).normalize(), []);
 
   // Shader uniforms
   const uniforms = useMemo(
