@@ -206,8 +206,8 @@ const earthFragmentShader = `
     vec4 dayColor = texture2D(dayMap, vUv);
     vec4 nightColor = texture2D(nightMap, vUv);
 
-    // Diffuse lighting on the Earth surface
-    vec3 litDay = dayColor.rgb * (0.15 + 0.85 * max(NdotL, 0.0));
+    // Diffuse lighting on the Earth surface — raised ambient so oceans aren't too dark
+    vec3 litDay = dayColor.rgb * (0.35 + 0.65 * max(NdotL, 0.0));
 
     // City lights — always on, warm golden tint
     float lightIntensity = nightColor.r * 0.3 + nightColor.g * 0.5 + nightColor.b * 0.2;
