@@ -18,6 +18,17 @@ body {
   overflow-x: hidden;
 }
 
+/* Starfield canvas — behind everything */
+#starfield-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  pointer-events: none;
+}
+
 /* Globe container - fixed background, GPU-composited layer */
 #globe-bg {
   position: fixed;
@@ -34,17 +45,17 @@ body {
 
 /* Glass effect — GPU-accelerated via transform3d */
 .glass {
-  background: rgba(10, 22, 40, 0.4);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(10, 22, 40, 0.5);
+  backdrop-filter: blur(50px);
+  -webkit-backdrop-filter: blur(50px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   transform: translate3d(0, 0, 0);
 }
 
 .glass-strong {
-  background: rgba(10, 22, 40, 0.6);
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
+  background: rgba(10, 22, 40, 0.65);
+  backdrop-filter: blur(60px);
+  -webkit-backdrop-filter: blur(60px);
   border: 1px solid rgba(255, 255, 255, 0.15);
   transform: translate3d(0, 0, 0);
 }
@@ -146,7 +157,8 @@ button[class*="hover:-translate"] {
     transition-duration: 0.01ms !important;
   }
 
-  #globe-bg {
+  #globe-bg,
+  #starfield-bg {
     display: none;
   }
 }

@@ -249,15 +249,15 @@ const Earth = memo(function Earth({ paused, mouse }: EarthProps) {
 
   // Load textures
   const earthMap = useTexture(
-    "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg"
+    "/earth_atmos_2048.jpg"
   );
   const cloudMap = useTexture(
-    "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_clouds_2048.png"
+    "/earth_clouds_2048.png"
   );
 
   // Memoize geometries
-  const earthGeo = useMemo(() => new THREE.SphereGeometry(1, 64, 64), []);
-  const atmoGeo = useMemo(() => new THREE.SphereGeometry(1.04, 64, 64), []);
+  const earthGeo = useMemo(() => new THREE.SphereGeometry(1.2, 64, 64), []);
+  const atmoGeo = useMemo(() => new THREE.SphereGeometry(2.04, 64, 64), []);
 
   // Sun direction — front-facing for bright Blue Marble look
   const sunDir = useMemo(() => new THREE.Vector3(2, 1, 3).normalize(), []);
