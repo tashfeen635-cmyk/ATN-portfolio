@@ -5,7 +5,11 @@ import { motion } from "framer-motion";
 
 function Hero() {
   return (
-    <section className="relative z-10 min-h-screen flex flex-col justify-center items-center text-center px-5">
+    <section
+      id="hero"
+      aria-label="Hero - Custom Software Development Company"
+      className="relative z-10 min-h-screen flex flex-col justify-center items-center text-center px-5"
+    >
       {/* Radial overlay to blend with globe */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(10,22,40,0.3)_50%,rgba(10,22,40,0.65)_100%)] pointer-events-none" />
 
@@ -30,10 +34,10 @@ function Hero() {
           transition={{ duration: 0.7, delay: 0.4 }}
           className="text-4xl sm:text-5xl md:text-7xl font-bold leading-tight glow-text"
         >
-          <span className="text-white">Helping Companies</span>
-          <span className="text-gray-200"> Scale with</span>
+          <span className="text-white">Custom Software Development</span>
+          <span className="text-gray-200"> to Help Companies</span>
           <br />
-          <span className="text-white">World Class Technology</span>
+          <span className="text-white">Scale with World-Class Technology</span>
         </motion.h1>
 
         {/* Subheading */}

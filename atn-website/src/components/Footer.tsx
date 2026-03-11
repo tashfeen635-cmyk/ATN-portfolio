@@ -45,7 +45,7 @@ const socials = [
 
 function Footer() {
   return (
-    <footer className="relative z-10 bg-[rgba(10,22,40,0.9)] border-t border-white/10 px-5">
+    <footer role="contentinfo" className="relative z-10 bg-[rgba(10,22,40,0.9)] border-t border-white/10 px-5">
       <div className="max-w-7xl mx-auto pt-16 pb-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
           {/* Brand */}

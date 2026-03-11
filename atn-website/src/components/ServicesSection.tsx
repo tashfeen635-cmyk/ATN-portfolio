@@ -89,7 +89,7 @@ const services = [
 
 function ServicesSection() {
   return (
-    <section id="services" className="section-base py-24 px-5">
+    <section id="services" aria-label="Software Development Services" className="section-base py-24 px-5">
       <div className="max-w-7xl mx-auto">
         <SectionHeader
           badge="What we offer"

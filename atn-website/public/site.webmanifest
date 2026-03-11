@@ -1,0 +1,16 @@
+{
+  "name": "Alpine Technology Network",
+  "short_name": "ATN",
+  "description": "Custom software development company specializing in web, mobile, cloud, AI/ML, and staff augmentation services.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a1628",
+  "theme_color": "#0a1628",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ]
+}

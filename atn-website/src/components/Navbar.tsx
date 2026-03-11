@@ -46,7 +46,7 @@ function Navbar() {
         }`}
       >
         {/* Logo */}
-        <a href="#" className="flex items-center space-x-2">
+        <a href="#" aria-label="Alpine Technology Network - Home" className="flex items-center space-x-2">
           <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
             <svg
               className="w-5 h-5 text-[#0a1628]"
@@ -87,11 +87,13 @@ function Navbar() {
 
         {/* Right side */}
         <div className="flex items-center space-x-3">
-          <button className="hidden sm:flex items-center space-x-1 text-sm text-gray-300 hover:text-white transition">
+          <button aria-label="Language selector - English" className="hidden sm:flex items-center space-x-1 text-sm text-gray-300 hover:text-white transition">
             <span>EN</span>
             <img
               src="https://flagcdn.com/w20/us.png"
-              alt="US"
+              alt="English language"
+              width={20}
+              height={12}
               className="w-5 h-3 rounded-sm"
             />
           </button>
@@ -106,6 +108,8 @@ function Navbar() {
           <button
             className="lg:hidden text-white p-1"
             onClick={toggleMobile}
+            aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={mobileOpen}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               {mobileOpen ? (

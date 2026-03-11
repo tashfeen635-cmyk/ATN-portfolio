@@ -60,7 +60,7 @@ const technologies = [
 
 function StaffAugmentation() {
   return (
-    <section id="staff-augmentation" className="section-base py-24 px-5">
+    <section id="staff-augmentation" aria-label="Staff Augmentation Services" className="section-base py-24 px-5">
       <div className="max-w-7xl mx-auto">
         <SectionHeader
           badge="Scale your team"

@@ -13,7 +13,7 @@ const stats = [
 
 function AboutSection() {
   return (
-    <section id="about" className="section-base py-24 px-5">
+    <section id="about" aria-label="About Alpine Technology Network" className="section-base py-24 px-5">
       <div className="max-w-7xl mx-auto">
         <SectionHeader
           badge="Who we are"

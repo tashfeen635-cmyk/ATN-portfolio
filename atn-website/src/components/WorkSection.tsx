@@ -51,7 +51,7 @@ const projects = [
 
 function WorkSection() {
   return (
-    <section id="work" className="section-base py-24 px-5">
+    <section id="work" aria-label="Our Portfolio and Case Studies" className="section-base py-24 px-5">
       <div className="max-w-7xl mx-auto">
         <SectionHeader
           badge="Our portfolio"

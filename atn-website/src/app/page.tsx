@@ -1,21 +1,9 @@
-"use client";
-
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
-
-// Starfield canvas — no SSR
-const Starfield = dynamic(() => import("@/components/Starfield"), {
-  ssr: false,
-});
-
-// 3D component — no SSR but eagerly loaded (no lazy chunk split)
-const Globe = dynamic(() => import("@/components/Globe"), {
-  ssr: false,
-  loading: () => <div id="globe-bg" />,
-});
+import BackgroundEffects from "@/components/BackgroundEffects";
 
 // Below-fold sections — lazy loaded so they don't block initial paint
 const AboutSection = dynamic(() => import("@/components/AboutSection"));
@@ -35,28 +23,17 @@ const SectionFallback = () => (
 export default function Home() {
   return (
     <>
-      {/* Starfield background — behind everything */}
-      <ErrorBoundary fallback={null}>
-        <Suspense fallback={null}>
-          <Starfield />
-        </Suspense>
-      </ErrorBoundary>
-
-      {/* Fixed globe background — isolated error boundary */}
-      <ErrorBoundary fallback={null}>
-        <Suspense fallback={null}>
-          <Globe />
-        </Suspense>
-      </ErrorBoundary>
+      {/* Background effects (starfield + globe) — client-only */}
+      <BackgroundEffects />
 
       {/* Grid overlay */}
-      <div className="grid-overlay" />
+      <div className="grid-overlay" aria-hidden="true" />
 
       {/* Navigation */}
       <Navbar />
 
       {/* Page content */}
-      <main>
+      <main role="main">
         <Hero />
 
         <ErrorBoundary>

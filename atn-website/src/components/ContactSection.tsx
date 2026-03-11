@@ -56,7 +56,7 @@ function ContactSection() {
     e.preventDefault();
   }, []);
   return (
-    <section id="contact" className="section-base py-24 px-5">
+    <section id="contact" aria-label="Contact Alpine Technology Network" className="section-base py-24 px-5">
       <div className="max-w-7xl mx-auto">
         <SectionHeader
           badge="Get in touch"
@@ -77,32 +77,55 @@ function ContactSection() {
             <h3 className="text-xl font-semibold text-white mb-6">
               Send us a message
             </h3>
-            <form className="space-y-5" onSubmit={handleSubmit}>
+            <form className="space-y-5" onSubmit={handleSubmit} aria-label="Contact form">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <label className="sr-only" htmlFor="first-name">First Name</label>
                 <input
+                  id="first-name"
+                  name="firstName"
                   type="text"
                   placeholder="First Name"
+                  autoComplete="given-name"
+                  required
                   className="contact-input"
                 />
+                <label className="sr-only" htmlFor="last-name">Last Name</label>
                 <input
+                  id="last-name"
+                  name="lastName"
                   type="text"
                   placeholder="Last Name"
+                  autoComplete="family-name"
+                  required
                   className="contact-input"
                 />
               </div>
+              <label className="sr-only" htmlFor="email">Email Address</label>
               <input
+                id="email"
+                name="email"
                 type="email"
                 placeholder="Email Address"
+                autoComplete="email"
+                required
                 className="contact-input"
               />
+              <label className="sr-only" htmlFor="subject">Subject</label>
               <input
+                id="subject"
+                name="subject"
                 type="text"
                 placeholder="Subject"
+                required
                 className="contact-input"
               />
+              <label className="sr-only" htmlFor="message">Your Message</label>
               <textarea
+                id="message"
+                name="message"
                 placeholder="Your Message"
                 rows={5}
+                required
                 className="contact-input"
                 style={{ resize: "none" }}
               />

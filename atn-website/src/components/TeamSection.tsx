@@ -45,7 +45,7 @@ const XIcon = () => (
 
 function TeamSection() {
   return (
-    <section id="team" className="section-base py-24 px-5">
+    <section id="team" aria-label="Our Team" className="section-base py-24 px-5">
       <div className="max-w-7xl mx-auto">
         <SectionHeader
           badge="The people behind ATN"
