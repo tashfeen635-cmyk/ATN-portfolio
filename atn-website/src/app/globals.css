@@ -45,19 +45,24 @@ body {
 
 /* Glass effect — GPU-accelerated via transform3d */
 .glass {
-  background: rgba(10, 22, 40, 0.5);
-  backdrop-filter: blur(50px);
-  -webkit-backdrop-filter: blur(50px);
+  background: rgba(10, 22, 40, 0.55);
+  backdrop-filter: blur(50px) saturate(180%);
+  -webkit-backdrop-filter: blur(50px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.1);
   transform: translate3d(0, 0, 0);
 }
 
 .glass-strong {
-  background: rgba(10, 22, 40, 0.65);
-  backdrop-filter: blur(60px);
-  -webkit-backdrop-filter: blur(60px);
+  background: rgba(10, 22, 40, 0.75);
+  backdrop-filter: blur(80px) saturate(180%);
+  -webkit-backdrop-filter: blur(80px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.15);
   transform: translate3d(0, 0, 0);
+}
+
+/* Navbar — ensure backdrop-filter works with fixed positioning */
+nav.fixed {
+  isolation: isolate;
 }
 
 /* Section base — composited layer for smooth scrolling */
